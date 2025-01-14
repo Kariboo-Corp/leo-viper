@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro"
+       name="leo_sim">
+
+  <xacro:arg name="fixed" default="false"/>
+  <xacro:arg name="robot_ns" default=""/>
+  <xacro:arg name="mecanum_wheels" default="false"/>
+
+  <xacro:include filename="$(find leo_description)/urdf/macros.xacro"/>    
+  <xacro:include filename="$(find arm_integration)/urdf/mobile_px100.urdf.xacro"/> 
+
+<joint name="arm_joint" type="fixed">
+<origin xyz="0.043 0 -0.001"/>
+<parent link="base_link"/>
+<child link="mobile_px100/base_link"/>
+</joint>
+  <xacro:leo_sim robot_ns="$(arg robot_ns)"
+                 fixed="$(arg fixed)"
+                 mecanum_wheels="$(arg mecanum_wheels)"/>
+
+
+</robot>
