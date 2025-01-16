@@ -22,6 +22,12 @@ Then go to the ws directory and build the package
 cd /home/ws
 colcon build --symlink-install
 ```
+
+Then make sure you source install directory
+'''bash
+source install/setup.bash
+'''
+
 Then  you can run 
 ```bash
 ros2 launch arm_integration leo_gz.launch.py 
