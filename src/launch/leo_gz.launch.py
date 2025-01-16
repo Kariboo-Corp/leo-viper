@@ -23,19 +23,51 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 
-from launch.actions import DeclareLaunchArgument
-from launch.actions import IncludeLaunchDescription
+
 from launch.launch_description import LaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch.actions import (
+    DeclareLaunchArgument,
+    IncludeLaunchDescription,
+    OpaqueFunction,
+    RegisterEventHandler,
+    SetEnvironmentVariable,
+)
+from launch.substitutions import (
+    EnvironmentVariable,
+    LaunchConfiguration,
+    PathJoinSubstitution,
+)
+from launch_ros.actions import Node
+from launch_ros.substitutions import FindPackageShare
+from pathlib import Path
+
+
+
+     
 
 
 def generate_launch_description():
+
+    
     # Setup project paths
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     pkg_project_gazebo = get_package_share_directory("arm_integration")
     pkg_project_worlds = get_package_share_directory("leo_gz_worlds")
+
+    
+    pkg_project_description = get_package_share_directory("interbotix_xsarm_descriptions")
+    print(os.path.join(pkg_project_description, 'models'))
+    gz_resource_path_env_var = SetEnvironmentVariable(
+        name='IGN_GAZEBO_RESOURCE_PATH',
+        value=[
+            EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', default_value=''),
+            ':',
+            os.path.join(pkg_project_description, 'models'),
+        ]
+    )
 
     sim_world = DeclareLaunchArgument(
         "sim_world",
@@ -54,7 +86,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         ),
-        launch_arguments={"gz_args": LaunchConfiguration("sim_world")}.items(),
+        launch_arguments={"gz_args": LaunchConfiguration("sim_world"),"ign_args":EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', default_value='') }.items(),
     )
 
     spawn_robot = IncludeLaunchDescription(
@@ -80,8 +112,12 @@ def generate_launch_description():
         output="screen",
     )
 
+    
+
+
     return LaunchDescription(
         [
+            gz_resource_path_env_var,
             sim_world,
             robot_ns,
             gz_sim,

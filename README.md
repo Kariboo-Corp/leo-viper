@@ -27,3 +27,8 @@ Then  you can run
 ros2 launch arm_integration leo_gz.launch.py 
 ```
 and see if everything is working fine.
+
+
+# Tooltips
+
+`ros2 run tf2_tools view_frames`

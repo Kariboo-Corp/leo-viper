@@ -18,7 +18,10 @@
   <xacro:arg name="external_urdf_loc"               default=""/>
   <xacro:arg name="hardware_type"                   default="actual"/>
 
-  <xacro:property name="mesh_directory"             value="$(find interbotix_xsarm_descriptions)/meshes/${robot_model}_meshes"/>
+  
+  <!-- <xacro:property name="mesh_directory"             value="$(find interbotix_xsarm_descriptions)/meshes/${robot_model}_meshes"/> -->  
+  <xacro:property name="mesh_directory"             value="package://interbotix_xsarm_descriptions/meshes/${robot_model}_meshes"/>
+  
   <xacro:property name="urdf_loc"                   value="$(arg external_urdf_loc)"/>
   <xacro:property name="hardware_type"              value="$(arg hardware_type)"/>
   <xacro:property name="pi_offset"                  value="0.00001"/>
