@@ -60,6 +60,7 @@ def launch_setup(context, *args, **kwargs):
 
     robot_model_launch_arg = LaunchConfiguration('robot_model')
     robot_name_launch_arg = LaunchConfiguration('robot_name')
+    robot_ns_launch_arg = LaunchConfiguration('robot_ns')
     use_rviz_launch_arg = LaunchConfiguration('use_rviz')
     rviz_config_launch_arg = LaunchConfiguration('rvizconfig')
     world_filepath_launch_arg = LaunchConfiguration('world_filepath')
@@ -79,10 +80,9 @@ def launch_setup(context, *args, **kwargs):
 
     # Set ignition resource path
     gz_resource_path_env_var = SetEnvironmentVariable(
-        name='GAZEBO_MODEL_PATH',
+        name='IGN_GAZEBO_RESOURCE_PATH',
         value=[
-            EnvironmentVariable('GAZEBO_MODEL_PATH', default_value=''),
-            '/usr/share/gazebo-11/models/',
+            EnvironmentVariable('IGN_GAZEBO_RESOURCE_PATH', default_value=''),
             ':',
             str(Path(
                 FindPackageShare('interbotix_common_sim').perform(context)
@@ -122,7 +122,7 @@ def launch_setup(context, *args, **kwargs):
         executable='create',
         name='ros_gz_sim_create',
         arguments=[
-            '-topic', f'/robot_description',
+            '-topic', f'{robot_ns_launch_arg.perform(context)}/robot_description',
             '-x', '0.0',
             '-y', '0.0',
             '-z', '0.0',
@@ -135,7 +135,7 @@ def launch_setup(context, *args, **kwargs):
         name='joint_state_broadcaster_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_name_launch_arg,
+        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
@@ -150,7 +150,7 @@ def launch_setup(context, *args, **kwargs):
         name='arm_controller_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_name_launch_arg,
+        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
@@ -165,7 +165,7 @@ def launch_setup(context, *args, **kwargs):
         name='gripper_controller_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_name_launch_arg,
+        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
@@ -181,11 +181,19 @@ def launch_setup(context, *args, **kwargs):
             PathJoinSubstitution([
                 FindPackageShare('arm_integration'),
                 'launch',
-                'spawn_robot_description.launch.py' 
+                'xsarm_description.launch.py' 
             ])
         ]),
         launch_arguments={
-            'robot_ns': "",
+            'robot_model': robot_model_launch_arg,
+            'robot_name': robot_name_launch_arg,
+            'robot_ns': robot_ns_launch_arg,
+            'use_rviz': "true",
+            "use_joint_pub_gui": "false",
+            "use_joint_pub": "true",
+            'rvizconfig': rviz_config_launch_arg,
+            'use_sim_time': use_sim_time_param,
+
         }.items(),
     )
 
@@ -229,6 +237,13 @@ def generate_launch_description():
             'robot_model',
             choices=get_interbotix_xsarm_models(),
             description='model type of the Interbotix Arm such as `wx200` or `rx150`.'
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            'robot_ns',
+            default_value='',
+            description='namespace of the robot.',
         )
     )
     declared_arguments.append(

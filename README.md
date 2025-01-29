@@ -32,3 +32,5 @@ and see if everything is working fine.
 # Tooltips
 
 `ros2 run tf2_tools view_frames`
+
+Launch moveit `ros2 launch arm_integration xsarm_moveit.launch.py robot_model:=mobile_px100 use_sim_time:=true hardware_type:=gz_classic`
