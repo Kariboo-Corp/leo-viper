@@ -317,7 +317,7 @@ def generate_launch_description():
             "urdf",
             "leo_arm_sim.urdf.xacro",
         ),
-        mappings={"robot_ns": ""},
+        mappings={"robot_ns": "", "hardware_type": "gz_classic"},
     )
     declared_arguments.append(
         DeclareLaunchArgument(

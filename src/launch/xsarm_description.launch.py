@@ -18,7 +18,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
+from launch.actions import RegisterEventHandler
+from launch.event_handlers import OnProcessExit
 import os
 from launch.conditions import IfCondition
 from interbotix_xs_modules.xs_launch.xs_launch import determine_use_sim_time_param
@@ -47,6 +48,7 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
         hardware_type_launch_arg=hardware_type_launch_arg
     )
     print(f"Robot description namespace {robot_ns}")
+    print(f"Hardware type {hardware_type_launch_arg.perform(context)}")
 
     if robot_ns == "":
         robot_gazebo_name = "mobile_px100"
@@ -60,11 +62,12 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
             "urdf",
             "leo_arm_sim.urdf.xacro",
         ),
-        mappings={"robot_ns": robot_ns},
+        mappings={"robot_ns": robot_ns, "hardware_type": hardware_type_launch_arg.perform(context)},
     )
+    print(robot_desc)
+
     # Launch robot state publisher node
     robot_state_publisher = Node(
-        namespace=robot_ns,
         package="robot_state_publisher",
         executable="robot_state_publisher",
         name="robot_state_publisher",
@@ -90,6 +93,8 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
     #         "1.65",
     #     ],
     # )
+    
+
     print(robot_name_launch_arg.perform(context))
     joint_state_publisher_node = Node(
         condition=IfCondition(use_joint_pub_launch_arg),
@@ -101,6 +106,53 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
         }],
         output={'both': 'log'},
     )
+    joint_state_broadcaster_spawner = Node(
+        package='controller_manager',
+        executable='spawner',
+        arguments=['joint_state_broadcaster'],
+    )
+    spawn_joint_state_broadcaster_node = Node(
+        name='joint_state_broadcaster_spawner',
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            '-c',
+            'controller_manager',
+            'joint_state_broadcaster',
+        ],
+        parameters=[{
+            'use_sim_time': "true",
+        }],
+    )
+
+    spawn_arm_controller_node = Node(
+        name='arm_controller_spawner',
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            '-c',
+            'controller_manager',
+            'arm_controller',
+        ],
+        parameters=[{
+            'use_sim_time': "true",
+        }]
+    )
+
+    spawn_gripper_controller_node = Node(
+        name='gripper_controller_spawner',
+        package='controller_manager',
+        executable='spawner',
+        arguments=[
+            '-c',
+            'controller_manager',
+            'gripper_controller',
+        ],
+        parameters=[{
+            'use_sim_time': "true",
+        }]
+    )
+
 
     joint_state_publisher_gui_node = Node(
         condition=IfCondition(use_joint_pub_gui_launch_arg),
@@ -140,6 +192,7 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
             robot_ns
             + "/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
             robot_ns + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
+            robot_ns + '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
         ],
         parameters=[
             {
@@ -159,6 +212,25 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
     )
     return [
         robot_state_publisher,
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=joint_state_broadcaster_spawner,
+                on_exit=[spawn_joint_state_broadcaster_node],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_joint_state_broadcaster_node,
+                on_exit=[spawn_arm_controller_node],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_arm_controller_node,
+                on_exit=[spawn_gripper_controller_node],
+            )  
+        ),
+
         # leo_rover,
         joint_state_publisher_node,
         joint_state_publisher_gui_node,

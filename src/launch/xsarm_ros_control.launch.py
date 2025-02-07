@@ -176,10 +176,10 @@ def launch_setup(context, *args, **kwargs):
     )
 
     return [
-        controller_manager_node,
-        spawn_arm_controller_node,
-        spawn_gripper_controller_node,
-        spawn_joint_state_broadcaster_node,
+        # controller_manager_node,
+        # spawn_arm_controller_node,
+        # spawn_gripper_controller_node,
+        # spawn_joint_state_broadcaster_node,
         xsarm_control_launch_include,
         xsarm_descriptions_launch_include,
     ]

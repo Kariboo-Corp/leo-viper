@@ -75,7 +75,7 @@ def launch_setup(context, *args, **kwargs):
             PathJoinSubstitution([
                 FindPackageShare('arm_integration'),
                 'launch',
-                'spawn_robot_description.launch.py'
+                'xsarm_description.launch.py'
             ])
         ]),
         launch_arguments={
@@ -140,7 +140,7 @@ def generate_launch_description():
             "urdf",
             "leo_arm_sim.urdf.xacro",
         ),
-        mappings={"robot_ns": ""},
+        mappings={"robot_ns": "", "hardware_type" :"gz_classic"},
     )
     declared_arguments.append(
         DeclareLaunchArgument(

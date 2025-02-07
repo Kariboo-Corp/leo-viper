@@ -31,13 +31,16 @@ RUN rm /home/ws/src/interbotix_ros_core/interbotix_ros_xseries/COLCON_IGNORE &&\
 RUN apt install ros-humble-leo-simulator
 RUN cd /home/ws/src &&\
     git clone https://github.com/LeoRover/leo_simulator-ros2 -b humble --recursive &&\
-    git clone https://github.com/LeoRover/leo_common-ros2.git -b humble --recursive    
+    git clone https://github.com/LeoRover/leo_common-ros2.git -b humble --recursive
 
 
+RUN export ROS_DISTRO=humble && export IGNITION_VERSION=fortress
 ## Build the workspace
 RUN cd /home/ws &&\
     rosdep update &&\
-    rosdep install --from-paths src -iry
+    rosdep install --from-paths src --rosdistro $ROS_DISTRO --ignore-src -iry
+
+RUN cd /home/ws/src && git clone https://github.com/ros-controls/gz_ros2_control.git -b humble
+
 RUN . /opt/ros/humble/setup.sh && cd /home/ws && colcon build --symlink-install
-    
 RUN mkdir /home/ws/src/arm_integration

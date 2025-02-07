@@ -135,7 +135,6 @@ def launch_setup(context, *args, **kwargs):
         name='joint_state_broadcaster_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
@@ -150,7 +149,6 @@ def launch_setup(context, *args, **kwargs):
         name='arm_controller_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
@@ -165,7 +163,6 @@ def launch_setup(context, *args, **kwargs):
         name='gripper_controller_spawner',
         package='controller_manager',
         executable='spawner',
-        namespace=robot_ns_launch_arg,
         arguments=[
             '-c',
             'controller_manager',
