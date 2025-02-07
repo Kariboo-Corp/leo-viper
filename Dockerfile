@@ -54,5 +54,8 @@ RUN echo 'source /opt/ros/humble/setup.bash && cd /home/ws' > /root/start_env.sh
 # Définir le répertoire de travail par défaut
 WORKDIR /home/ws
 
+RUN export ROS_DISTRO=humble && export IGNITION_VERSION=fortress
+RUN cd /home/ws/src && git clone https://github.com/ros-controls/gz_ros2_control.git -b humble
+
 # Construire le workspace avec colcon
 RUN . /opt/ros/humble/setup.bash && colcon build --symlink-install
