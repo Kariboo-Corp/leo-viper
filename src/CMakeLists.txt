@@ -15,6 +15,7 @@ install(
     launch
     urdf
     config
+    scripts
   DESTINATION share/${PROJECT_NAME}
 )
 
