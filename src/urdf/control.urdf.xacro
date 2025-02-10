@@ -120,7 +120,6 @@
         </ros>
         <robot_param>robot_description</robot_param>
         <robot_param_node>robot_state_publisher</robot_param_node>
-                <parameters>$(find arm_integration)/config/controllers/${robot_model}_controllers.yaml</parameters>
 
         <parameters>$(find interbotix_xsarm_sim)/config/trajectory_controllers/${robot_model}_trajectory_controllers.yaml</parameters>
       </plugin>
@@ -132,7 +131,7 @@
       <ros>
         <namespace>$(arg robot_ns)</namespace>
       </ros>
-        <parameters>$(find interbotix_xsarm_sim)/config/trajectory_controllers/${robot_model}_trajectory_controllers.yaml</parameters>
+          <parameters>$(find arm_integration)/config/controller/${robot_model}_controllers.yaml</parameters>
     </plugin>
     </gazebo>
     <xacro:include filename="$(find interbotix_common_sim)/media/materials/scripts/interbotix_texture.gazebo"/>

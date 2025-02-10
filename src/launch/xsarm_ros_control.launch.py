@@ -65,17 +65,24 @@ def launch_setup(context, *args, **kwargs):
         context=context,
         hardware_type_launch_arg=hardware_type_launch_arg
     )
-
-    ros2_control_controllers_config_parameter_file = ParameterFile(
-        param_file=PathJoinSubstitution([
-            FindPackageShare('interbotix_xsarm_ros_control'),
-            'config',
-            'controllers',
-            f'{robot_model_launch_arg.perform(context)}_controllers.yaml',
-        ]),
-        allow_substs=True
+    robot_controllers = PathJoinSubstitution(
+    [
+        FindPackageShare('arm_integration'),
+        'config',
+        f'{robot_description_launch_arg.perform(context)}_controllers.yaml',
+    ]
     )
 
+    controller_manager_node = Node(
+        package='controller_manager',
+        executable='ros2_control_node',
+        namespace=robot_name_launch_arg,
+        parameters=[
+            {'robot_description': robot_description_launch_arg},
+            robot_controllers,
+        ],
+        output={'both': 'screen'},
+    )
     xsarm_control_launch_include = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -99,89 +106,10 @@ def launch_setup(context, *args, **kwargs):
         ),
     )
 
-    xsarm_descriptions_launch_include = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            PathJoinSubstitution([
-                FindPackageShare('arm_integration'),
-                'launch',
-                'spawn_robot_description.launch.py',
-            ])
-        ]),
-        launch_arguments={
-            'robot_model': robot_model_launch_arg,
-            'robot_name': robot_name_launch_arg,
-            'use_rviz': use_rviz_launch_arg,
-            'mode_configs': mode_configs_launch_arg,
-            'hardware_type': hardware_type_launch_arg,
-            'use_sim_time': use_sim_time_param,
-        }.items(),
-        condition=LaunchConfigurationEquals(
-            launch_configuration_name='hardware_type',
-            expected_value='fake'
-        ),
-    )
-
-    controller_manager_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        namespace=robot_name_launch_arg,
-        parameters=[
-            {'robot_description': robot_description_launch_arg},
-            ros2_control_controllers_config_parameter_file,
-        ],
-        output={'both': 'screen'},
-    )
-
-    spawn_arm_controller_node = Node(
-        name='arm_controller_spawner',
-        package='controller_manager',
-        executable='spawner',
-        namespace=robot_name_launch_arg,
-        arguments=[
-            '-c',
-            f'/{robot_name_launch_arg.perform(context)}/controller_manager',
-            'arm_controller',
-        ],
-        output={'both': 'screen'},
-    )
-
-    spawn_gripper_controller_node = Node(
-        name='gripper_controller_spawner',
-        package='controller_manager',
-        executable='spawner',
-        namespace=robot_name_launch_arg,
-        arguments=[
-            '-c',
-            f'/{robot_name_launch_arg.perform(context)}/controller_manager',
-            'gripper_controller',
-        ],
-        output={'both': 'screen'},
-    )
-
-    spawn_joint_state_broadcaster_node = Node(
-        name='joint_state_broadcaster_spawner',
-        package='controller_manager',
-        executable='spawner',
-        namespace=robot_name_launch_arg,
-        arguments=[
-            '-c',
-            f'/{robot_name_launch_arg.perform(context)}/controller_manager',
-            'joint_state_broadcaster',
-        ],
-        condition=LaunchConfigurationEquals(
-            launch_configuration_name='hardware_type',
-            expected_value='fake'
-        ),
-        output={'both': 'screen'},
-    )
 
     return [
-        # controller_manager_node,
-        # spawn_arm_controller_node,
-        # spawn_gripper_controller_node,
-        # spawn_joint_state_broadcaster_node,
+        controller_manager_node,
         xsarm_control_launch_include,
-        xsarm_descriptions_launch_include,
     ]
 import os
 import xacro

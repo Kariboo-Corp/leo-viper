@@ -58,6 +58,8 @@ def launch_setup(context, *args, **kwargs):
     mode_configs_launch_arg = LaunchConfiguration('mode_configs')
     load_configs_launch_arg = LaunchConfiguration('load_configs')
     use_sim_launch_arg = LaunchConfiguration('use_sim')
+    use_joint_pub_launch_arg = LaunchConfiguration('use_joint_pub')
+    use_joint_pub_gui_launch_arg = LaunchConfiguration('use_joint_pub_gui')
     robot_description_launch_arg = LaunchConfiguration('robot_description')
     hardware_type_launch_arg = LaunchConfiguration('hardware_type')
     xs_driver_logging_level_launch_arg = LaunchConfiguration('xs_driver_logging_level')
@@ -82,6 +84,8 @@ def launch_setup(context, *args, **kwargs):
             'robot_model': robot_model_launch_arg,
             'robot_name': robot_name_launch_arg,
             'use_rviz': use_rviz_launch_arg,
+            "use_joint_pub": use_joint_pub_launch_arg,
+            "use_joint_pub_gui": use_joint_pub_gui_launch_arg,
             'robot_description': robot_description_launch_arg,
             'use_sim_time': use_sim_time_param,
         }.items(),
@@ -223,7 +227,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             'use_sim',
-            default_value='false',
+            default_value='true',
             choices=('true', 'false'),
             description=(
                 'if `true`, the DYNAMIXEL simulator node is run; use RViz to visualize the'
@@ -231,6 +235,23 @@ def generate_launch_description():
             ),
         )
     )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            'use_joint_pub',
+            default_value='true',
+            choices=('true', 'false'),
+            description='launches the Joint State Publisher if set to `true`.',
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            'use_joint_pub_gui',
+            default_value='true',
+            choices=('true', 'false'),
+            description='launches the Joint State Publisher GUI if set to `true`.',
+        )
+    )
+
     declared_arguments.append(
         DeclareLaunchArgument(
             'use_sim_time',

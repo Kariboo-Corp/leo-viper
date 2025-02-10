@@ -192,7 +192,6 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
             robot_ns
             + "/camera/camera_info@sensor_msgs/msg/CameraInfo[gz.msgs.CameraInfo",
             robot_ns + "/joint_states@sensor_msgs/msg/JointState[gz.msgs.Model",
-            robot_ns + '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
         ],
         parameters=[
             {

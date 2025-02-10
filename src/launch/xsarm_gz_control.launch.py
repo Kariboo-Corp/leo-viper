@@ -48,9 +48,9 @@ def generate_launch_description():
         # Get URDF or SDF via xacro
         robot_controllers = PathJoinSubstitution(
         [
-            FindPackageShare('interbotix_xsarm_control'),
+            FindPackageShare('arm_integration'),
             'config',
-            f'{robot_model_arg}.yaml',
+            f'{robot_model_arg}_controllers.yaml',
         ]
         )
         pkg_project_description = get_package_share_directory("arm_integration")
@@ -64,24 +64,25 @@ def generate_launch_description():
         )
         print(robot_description_content)
 
-        robot_description = {'robot_description': robot_description_content}
+        robot_description = {'robot_description': robot_description_content, "use_sim_time": "true"}
         node_robot_state_publisher = Node(
             package='robot_state_publisher',
+            parameters=[
+                {"robot_description": robot_description_content, "use_sim_time": True},
+            ],
             executable='robot_state_publisher',
-            output='screen',
-            parameters=[robot_description]
+            output='both',
         )
         controller_manager_node = Node(
             package='controller_manager',
             executable='ros2_control_node',
-            namespace=robot_name_launch_arg,
             parameters=[
-                {'robot_description': robot_description},
+                {'robot_description': robot_description, "use_sim_time": True},
                 robot_controllers,
             ],
             output={'both': 'screen'},
         )
-        return [node_robot_state_publisher]
+        return [node_robot_state_publisher, controller_manager_node]
 
 
 
@@ -91,7 +92,7 @@ def generate_launch_description():
         executable='create',
         output='screen',
         arguments=['-topic', 'robot_description', '-name',
-                   'diff_drive', '-allow_renaming', 'true'],
+                   'leo_viper', '-allow_renaming', 'true'],
     )
 
  
@@ -101,6 +102,9 @@ def generate_launch_description():
         package='controller_manager',
         executable='spawner',
         arguments=['joint_state_broadcaster'],
+        parameters=[{
+            'use_sim_time': "true",
+        }],
     )
     spawn_joint_state_broadcaster_node = Node(
         name='joint_state_broadcaster_spawner',
@@ -193,6 +197,9 @@ def generate_launch_description():
         )]
     
     def xsarm_control(context):
+        use_joint_pub = LaunchConfiguration('use_joint_pub')
+        use_joint_pub_gui = LaunchConfiguration('use_joint_pub_gui')
+
         return [ IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             PathJoinSubstitution([
@@ -206,8 +213,8 @@ def generate_launch_description():
             'robot_name': robot_name_launch_arg,
             'use_rviz': use_rviz_launch_arg,
             'mode_configs': mode_configs_launch_arg,
-            "use_joint_pub_gui": "false",
-            "use_joint_pub" : "false",
+            "use_joint_pub_gui": use_joint_pub_gui,
+            "use_joint_pub" : use_joint_pub,
             'hardware_type': hardware_type_launch_arg,
             'use_sim_time': use_sim_time,
             'xs_driver_logging_level': xs_driver_logging_level_launch_arg,
@@ -321,6 +328,18 @@ def generate_launch_description():
                 'tells ROS nodes asking for time to get the Gazebo-published simulation time, '
                 'published over the ROS topic /clock.'
             )
+        ),    
+        DeclareLaunchArgument(
+            'use_joint_pub',
+            default_value='true',
+            choices=('true', 'false'),
+            description='launches the Joint State Publisher if set to `true`.',
+        ),
+        DeclareLaunchArgument(
+            'use_joint_pub_gui',
+            default_value='true',
+            choices=('true', 'false'),
+            description='launches the Joint State Publisher GUI if set to `true`.',
         ),
         DeclareLaunchArgument(
             "sim_world",

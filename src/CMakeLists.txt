@@ -15,6 +15,7 @@ install(
     launch
     urdf
     config
+    config/controller
   DESTINATION share/${PROJECT_NAME}
 )
 
