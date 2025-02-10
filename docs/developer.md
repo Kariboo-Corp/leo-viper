@@ -36,10 +36,16 @@ The project is a ROS2 package which take the package **interbotix_ros_manipulato
 - **xsarm_control.launch.py**: Launch the control layer (cf diagram) which allow other script and nodes to control the arm. 
 - **xsarm_ros_control.launch.py**: Launch the ros control layer which allow to control the arm with ROS2 messages.
 
+### Useful parameters
 
-### Miscs
+- **robot_model** : The name of the robot model. For the project it would be vx300 but on all tutorial the mobile_px100 is used.
+- **hardware_type** : Put **gz_classic** to use gazebo simulator (despite it is ignition).
+- **use_sim_time** : Set to true to use simulation time if you are using gazebo.
 
-- Rover moving script : 
+
+## Miscs
+
+- Rover moving script :  You can follow the installation tutorial [here](rover_move.md)
 - Drone target moving : You can follow the installation tutorial [here](drone_simulation.md)
 
 
