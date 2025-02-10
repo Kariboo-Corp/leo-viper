@@ -54,6 +54,8 @@ The project is a ROS2 package which take the package **interbotix_ros_manipulato
 [Hub of XSARM ROS2 packages doc](https://docs.trossenrobotics.com/interbotix_xsarms_docs/ros2_packages.html)
 You'll be able to find all parameters that you can use in the launch files and the nodes.
 
+[Gazebo Ros Control Doc](https://control.ros.org/master/doc/gz_ros2_control/doc/index.html) A lot of useful information about how to control a robot in gazebo with ROS2. This is still in work in progress because the xsarms packages are not fully migrated to this packages.
+
 ## Future work
 
 
