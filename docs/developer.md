@@ -2,7 +2,7 @@
 # 📖 Developer documentation
 
 This is the documentation of the leo-viper repository which is the integration of interbotix xsarm on leo-rover robot using  ROS2.
-This is only the half of the project, the other is an other repository which is the ros2 package of the arm itself which follow a given target.
+This is only the half of the project, the other is an other repository which is the [ros2 package](https://github.com/Kariboo-Corp/vaiming-ros-package) of the arm itself which follow a given target.
 
 - [📖 Developer documentation](#-developer-documentation)
   - [Project specifications](#project-specifications)
