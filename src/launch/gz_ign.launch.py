@@ -1,4 +1,4 @@
-# Copyright 2022 Trossen Robotics
+# Copyright 2022 Trossen Robotics and Modified by Rodriguez Esteban
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -61,14 +61,7 @@ def launch_setup(context, *args, **kwargs):
     robot_model_launch_arg = LaunchConfiguration('robot_model')
     robot_name_launch_arg = LaunchConfiguration('robot_name')
     robot_ns_launch_arg = LaunchConfiguration('robot_ns')
-    use_rviz_launch_arg = LaunchConfiguration('use_rviz')
     rviz_config_launch_arg = LaunchConfiguration('rvizconfig')
-    world_filepath_launch_arg = LaunchConfiguration('world_filepath')
-    use_gazebo_gui_launch_arg = LaunchConfiguration('use_gazebo_gui')
-    verbose_launch_arg = LaunchConfiguration('verbose')
-    debug_launch_arg = LaunchConfiguration('debug')
-    paused_launch_arg = LaunchConfiguration('paused')
-    recording_launch_arg = LaunchConfiguration('recording')
     sim_world_launch_arg = LaunchConfiguration('sim_world')
     hardware_type_launch_arg = LaunchConfiguration('hardware_type')
 
@@ -252,25 +245,7 @@ def generate_launch_description():
             ),
         )
     )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'use_rviz',
-            default_value='true',
-            choices=('true', 'false'),
-            description='launches RViz if set to `true`.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'rvizconfig',
-            default_value=PathJoinSubstitution([
-                FindPackageShare('interbotix_xsarm_sim'),
-                'rviz',
-                'xsarm_gz_classic.rviz',
-            ]),
-            description='file path to the config file RViz should load.',
-        )
-    )
+
     declared_arguments.append(
         DeclareLaunchArgument(
             'world_filepath',
@@ -280,46 +255,6 @@ def generate_launch_description():
                 'interbotix.world',
             ]),
             description="the file path to the Gazebo 'world' file to load.",
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'use_gazebo_gui',
-            default_value='true',
-            choices=('true', 'false'),
-            description='launches the Gazebo GUI if `true`.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'verbose',
-            default_value='false',
-            choices=('true', 'false'),
-            description='launches Gazebo with verbose console logging if `true`.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'debug',
-            default_value='false',
-            choices=('true', 'false'),
-            description='start gzserver in debug mode using gdb.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'paused',
-            default_value='false',
-            choices=('true', 'false'),
-            description='start Gazebo in a paused state.',
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            'recording',
-            default_value='false',
-            choices=('true', 'false'),
-            description='enable Gazebo state log recording.',
         )
     )
     declared_arguments.append(

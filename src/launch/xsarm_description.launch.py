@@ -1,4 +1,4 @@
-# Copyright 2023 Fictionlab sp. z o.o.
+# Copyright 2023 Fictionlab sp. z o.o. and modified by Rodriguez Esteban
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,6 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
     use_joint_pub_launch_arg = LaunchConfiguration('use_joint_pub')
     use_joint_pub_gui_launch_arg = LaunchConfiguration('use_joint_pub_gui')
     rvizconfig_launch_arg = LaunchConfiguration('rvizconfig')
-    robot_description_launch_arg = LaunchConfiguration('robot_description')
     hardware_type_launch_arg = LaunchConfiguration('hardware_type')
     use_sim_time_param = determine_use_sim_time_param(
         context=context,
@@ -77,23 +76,6 @@ def spawn_robot(context: LaunchContext, namespace: LaunchConfiguration):
             {"robot_description": robot_desc},
         ],
     )
-    # # Spawn a robot inside a simulation
-    # leo_rover = Node(
-    #     namespace=robot_ns,
-    #     package="ros_gz_sim",
-    #     executable="create",
-    #     name="ros_gz_sim_create",
-    #     output="both",
-    #     arguments=[
-    #         "-topic",
-    #         "robot_description",
-    #         "-name",
-    #         robot_gazebo_name,
-    #         "-z",
-    #         "1.65",
-    #     ],
-    # )
-    
 
     print(robot_name_launch_arg.perform(context))
     joint_state_publisher_node = Node(

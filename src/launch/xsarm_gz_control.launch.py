@@ -1,4 +1,4 @@
-# Copyright 2022 Open Source Robotics Foundation, Inc.
+# Copyright 2022 Open Source Robotics Foundation, Inc. and modified by Rodriguez Esteban
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ def generate_launch_description():
     # Launch Arguments
     use_sim_time = LaunchConfiguration('use_sim_time', default=True)
     robot_model_arg = LaunchConfiguration('robot_model')
-    robot_ns_launch_arg = LaunchConfiguration('robot_ns')
     sim_world_launch_arg = LaunchConfiguration('sim_world')
     robot_name_launch_arg = LaunchConfiguration('robot_name')
     use_rviz_launch_arg = LaunchConfiguration('use_rviz')
@@ -95,58 +94,6 @@ def generate_launch_description():
                    'leo_viper', '-allow_renaming', 'true'],
     )
 
- 
-
-
-    joint_state_broadcaster_spawner = Node(
-        package='controller_manager',
-        executable='spawner',
-        arguments=['joint_state_broadcaster'],
-        parameters=[{
-            'use_sim_time': "true",
-        }],
-    )
-    spawn_joint_state_broadcaster_node = Node(
-        name='joint_state_broadcaster_spawner',
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            '-c',
-            'controller_manager',
-            'joint_state_broadcaster',
-        ],
-        parameters=[{
-            'use_sim_time': "true",
-        }],
-    )
-
-    spawn_arm_controller_node = Node(
-        name='arm_controller_spawner',
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            '-c',
-            'controller_manager',
-            'arm_controller',
-        ],
-        parameters=[{
-            'use_sim_time': "true",
-        }]
-    )
-
-    spawn_gripper_controller_node = Node(
-        name='gripper_controller_spawner',
-        package='controller_manager',
-        executable='spawner',
-        arguments=[
-            '-c',
-            'controller_manager',
-            'gripper_controller',
-        ],
-        parameters=[{
-            'use_sim_time': "true",
-        }]
-    )
     # Bridge
     bridge = Node(
         package='ros_gz_bridge',
@@ -229,24 +176,6 @@ def generate_launch_description():
         
         bridge,
         gz_spawn_entity,
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=joint_state_broadcaster_spawner,
-        #         on_exit=[spawn_joint_state_broadcaster_node],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=spawn_joint_state_broadcaster_node,
-        #         on_exit=[spawn_arm_controller_node],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=spawn_arm_controller_node,
-        #         on_exit=[spawn_gripper_controller_node],
-        #     )  
-        # ),
 
         # Launch Arguments
         DeclareLaunchArgument(
